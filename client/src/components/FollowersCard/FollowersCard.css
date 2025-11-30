@@ -1,0 +1,74 @@
+.FollowersCard {
+  width: 100%;
+  border-radius: 0.7rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  max-height: 10rem;
+  overflow-y: scroll;
+}
+.FollowersCardModalOpened {
+  width: 100%;
+  border-radius: 0.7rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  max-height: 15rem;
+  overflow-y: hidden;
+}
+
+.peopleYouMayKnowHeading {
+  color: var(--purple);
+}
+.follower {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem;
+  background-color: var(--cardColor);
+  border-radius: 1rem;
+}
+
+.follower > div {
+  display: flex;
+  gap: 10px;
+}
+
+.followerImage {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+}
+
+.name {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.name > span:nth-of-type(1) {
+  font-weight: bold;
+}
+
+.fc-button {
+  height: 2rem;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.UnfollowButton {
+  color: var(--purple);
+  border: 2px solid var(--purple);
+  cursor: pointer;
+  background: transparent;
+}
+
+.showMoreText {
+  font-weight: bold;
+  color: var(--purple);
+  align-self: center;
+  cursor: pointer;
+}
