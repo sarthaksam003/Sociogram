@@ -1,8 +1,8 @@
 import React from "react";
 
-import Home from "../../img/home.svg";
-import dark from "../../img/dark.svg";
-import Comment from "../../img/comment.png";
+// import Home from "../../img/home.svg";
+// import dark from "../../img/dark.svg";
+// import Comment from "../../img/comment.png";
 import {
   UilSetting,
   UilEstate,

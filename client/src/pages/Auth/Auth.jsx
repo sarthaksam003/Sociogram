@@ -49,6 +49,7 @@ const Auth = () => {
         const response = await dispatch(logIn(data, navigate)).then((re) => {
           setToastMessage(re);
         });
+        console.log(response);
       };
       message();
     }
@@ -69,7 +70,12 @@ const Auth = () => {
         {/* left side */}
 
         <div className="a-left">
-          <img src={Logo} alt="" className="applogo" style={{ width: "10%", height: "10%" }} />
+          <img
+            src={Logo}
+            alt=""
+            className="applogo"
+            style={{ width: "10%", height: "10%" }}
+          />
 
           <div className="Webname">
             <h1>Sociogram</h1>

@@ -20,9 +20,11 @@ const FollowersCard = ({ location }) => {
     <React.Fragment>
       <h3 className="peopleYouMayKnowHeading">People you may know</h3>
       <div className="FollowersCard">
-        {persons.map((person, id) => {
-          if (person._id !== user._id) return <User person={person} key={id} />;
-        })}
+        {persons
+          .filter((person) => person._id !== user._id)
+          .map((person, id) => (
+            <User person={person} key={id} />
+          ))}
 
         <FollowersModal
           modalOpened={modalOpened}

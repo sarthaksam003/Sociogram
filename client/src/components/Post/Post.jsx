@@ -32,7 +32,8 @@ const Post = ({ data }) => {
       .catch(function (error) {
         console.log(error);
       });
-  }, []);
+    console.log(response);
+  }, [data.userId]);
 
   const addCommentHandler = (e) => {
     e.preventDefault();
@@ -40,13 +41,17 @@ const Post = ({ data }) => {
     console.log(e.target[0].value);
     setCommentToPost(`{commentor: ${user._id}, cmnt: ${e.target[0].value}}`);
     const response = axios
-      .put(`https://sociogram-backend-v2ax.onrender.com/posts/addcomment/${data._id}`, commentToPost)
+      .put(
+        `https://sociogram-backend-v2ax.onrender.com/posts/addcomment/${data._id}`,
+        commentToPost
+      )
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
         console.log(error);
       });
+    console.log(response);
   };
   console.log(data);
   return (
@@ -83,7 +88,7 @@ const Post = ({ data }) => {
         </span>
         <ul>
           {data.comments.map((item) => {
-            <li>{item.cmnt}</li>;
+            return <li>{item.cmnt}</li>;
           })}
         </ul>
         <form className="commentForm" onSubmit={addCommentHandler}>
