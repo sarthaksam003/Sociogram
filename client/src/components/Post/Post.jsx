@@ -25,7 +25,7 @@ const Post = ({ data }) => {
   useEffect(() => {
     const id = data.userId;
     const response = axios
-      .get(`http://localhost:5000/user/${id}`)
+      .get(`https://sociogram-backend-v2ax.onrender.com/user/${id}`)
       .then(function (response) {
         setPoster(`${response.data.firstname} ${response.data.lastname}`);
       })
@@ -40,7 +40,7 @@ const Post = ({ data }) => {
     console.log(e.target[0].value);
     setCommentToPost(`{commentor: ${user._id}, cmnt: ${e.target[0].value}}`);
     const response = axios
-      .put(`http://localhost:5000/posts/addcomment/${data._id}`, commentToPost)
+      .put(`https://sociogram-backend-v2ax.onrender.com/posts/addcomment/${data._id}`, commentToPost)
       .then(function (response) {
         console.log(response);
       })
