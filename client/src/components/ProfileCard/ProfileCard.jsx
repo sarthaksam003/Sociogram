@@ -1,34 +1,41 @@
 // import React from "react";
-// import "./ProfileCard.css";
-// import Cover from "../../img/cover.jpg";
-// import Profile from "../../img/profileImg.jpg";
+import "./ProfileCard.css";
+import Cover from "../../img/cover1.png";
+import Profile from "../../img/profileImg.jpg";
+import placeHolderProfilePic from "../../img/fallback-profile-pic.png"
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-const ProfileCard = ({location}) => {
+import { PUBLIC_FOLDER } from '../../utils/config';
+
+const ProfileCard = ({ location }) => {
   const { user } = useSelector((state) => state.authReducer.authData);
-  const posts = useSelector((state)=>state.postReducer.posts)
+  const posts = useSelector((state) => state.postReducer.posts)
   const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER;
 
   return (
     <div className="ProfileCard">
       <div className="ProfileImages">
         <img src={
-            user.coverPicture
-              ? serverPublic + user.coverPicture
-              : serverPublic + "defaultCover.jpg"
-          } alt="CoverImage" />
+          user.coverPicture
+            ? serverPublic + user.coverPicture
+            : Cover
+        } alt="CoverImage"
+          style={{maxHeight:"300px",objectFit: "cover" }}
+        />
         <img
           src={
             user.profilePicture
-              ? serverPublic + user.profilePicture
-              : serverPublic + "defaultProfile.png"
+              ? PUBLIC_FOLDER + user.profilePicture
+              :
+              placeHolderProfilePic
           }
+          style={{ background: "white", objectFit: "contain" }}
           alt="ProfileImage"
         />
       </div>
       <div className="ProfileName">
         <span>{user.firstname} {user.lastname}</span>
-        <span>{user.worksAt? user.worksAt : 'Write about yourself'}</span>
+        <span>{user.worksAt ? user.worksAt : 'Write about yourself'}</span>
       </div>
 
       <div className="followStatus">
@@ -49,7 +56,7 @@ const ProfileCard = ({location}) => {
               <div className="vl"></div>
               <div className="follow">
                 <span>{
-                posts.filter((post)=>post.userId === user._id).length
+                  posts.filter((post) => post.userId === user._id).length
                 }</span>
                 <span>Posts</span>
               </div>{" "}

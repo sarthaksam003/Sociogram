@@ -7,6 +7,8 @@ import { UilSchedule } from "@iconscout/react-unicons";
 import { UilTimes } from "@iconscout/react-unicons";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImage, uploadPost } from "../../actions/UploadAction";
+import placeHolderProfilePic from "../../img/fallback-profile-pic.png"
+import { PUBLIC_FOLDER } from '../../utils/config';
 
 const PostShare = () => {
   const dispatch = useDispatch();
@@ -63,8 +65,9 @@ const PostShare = () => {
       <img
         src={
           user.profilePicture
-            ? serverPublic + user.profilePicture
-            : serverPublic + "defaultProfile.png"
+            ? PUBLIC_FOLDER + user.profilePicture
+            : placeHolderProfilePic
+          // placeholderProfilePic
         }
         alt="Profile"
       />
@@ -95,7 +98,7 @@ const PostShare = () => {
           </div>
           <div className="option" style={{ color: "var(--shedule)" }}>
             <UilSchedule />
-            Shedule
+            Schedule
           </div>
           <button
             className="button ps-button"
@@ -106,7 +109,7 @@ const PostShare = () => {
           </button>
 
           <div style={{ display: "none" }}>
-            <input type="file" ref={imageRef} onChange={onImageChange} />
+            <input type="file" ref={imageRef} onChange={onImageChange} style={{width:"100%",height:"100%"}}/>
           </div>
         </div>
 
