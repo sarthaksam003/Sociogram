@@ -35,7 +35,6 @@ function resolveImageUrl(src) {
 }
 
 
-let API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
 const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || PUBLIC_FOLDER || `${API_BASE}/images/`;
 
 const Post = ({ data }) => {
