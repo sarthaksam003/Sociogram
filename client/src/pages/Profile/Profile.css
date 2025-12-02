@@ -1,42 +1,35 @@
+/* desktop layout by default */
 .Profile {
-    position: relative;
-    display: grid;
-    grid-template-columns: 18rem auto 20rem;
-    gap: 1rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: 18rem auto 20rem;
+  gap: 1rem;
 }
 
-
 .Profile-center {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* helper classes to show/hide views (no !important) */
+.profile-pc { display: block; }   /* desktop visible */
+.profile-mob { display: none; }    /* mobile hidden */
+
+/* small screens: stack, show mobile container */
+@media screen and (max-width: 769px) {
+  .Profile {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
+  }
 
-.profile-pc {
-    display: inline;
-}
+  .profile-pc { display: none; }
+  .profile-mob { display: block; }
 
-.profile-mob {
-    display: none;
-}
-
-@media screen and (max-width: 769px) {
-    .Profile {
-        display: flex;
-        flex-direction: column !important;
-    }
-
-    .profile-pc {
-        display: none;
-    }
-
-    .profile-mob {
-        display: inline;
-    }
-
-    .Profile-center {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+  .Profile-center { /* same behaviour on mobile */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

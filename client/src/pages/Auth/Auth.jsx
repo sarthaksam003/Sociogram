@@ -70,16 +70,20 @@ const Auth = () => {
         {/* left side */}
 
         <div className="a-left">
-          <img
-            src={Logo}
-            alt=""
-            className="applogo"
-            style={{ width: "10%", height: "10%" }}
-          />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-evenly", width:"70%" }}>
+            <div>
+              <img
+                src={Logo}
+                alt=""
+                className="applogo"
+                style={{ width: "5rem", height: "6rem", }}
+              />
+            </div>
 
-          <div className="Webname">
-            <h1>Sociogram</h1>
-            <h6>Connecting people throughout the world</h6>
+            <div className="Webname">
+              <h1>Sociogram</h1>
+              <h6>Connecting people throughout the world</h6>
+            </div>
           </div>
         </div>
 
