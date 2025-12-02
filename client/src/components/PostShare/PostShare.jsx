@@ -61,28 +61,25 @@ const PostShare = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    // post data
     const newPost = {
       userId: user._id,
       desc: desc.current.value,
     };
 
     try {
-      // If there is an image, upload it first to your GridFS endpoint
       if (image) {
-        // uploadFile returns { filename, fileId } (based on server)
-        const uploadRes = await uploadFile(image, user._id);
-        // prefer filename for simple GET /images/:filename display; can use fileId too
-        const returnedName = uploadRes.filename || uploadRes.fileId;
-        newPost.image = returnedName;
+        // optional: pass token if your upload route requires auth
+        const token = JSON.parse(localStorage.getItem("profile"))?.token;
+        const uploadRes = await uploadFile(image, token);
+        // server returns { filename, url }
+        newPost.image = uploadRes.filename; // store this in DB
       }
 
-      // create post (dispatch action or direct axios call)
-      // you already use Redux action uploadPost(newPost) — keep using it
+      // now create post (your existing Redux action)
       dispatch(uploadPost(newPost));
       resetShare();
     } catch (err) {
-      console.error("Error in handleUpload:", err);
+      console.error("Error uploading/creating post:", err);
     }
   };
 
