@@ -15,7 +15,7 @@ const PostShare = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer.authData);
   const loading = useSelector((state) => state.postReducer.uploading);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(placeHolderProfilePic);
   const desc = useRef();
   const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER;
 
@@ -95,7 +95,6 @@ const PostShare = () => {
           user.profilePicture
             ? PUBLIC_FOLDER + user.profilePicture
             : placeHolderProfilePic
-          // placeholderProfilePic
         }
         alt="Profile"
       />
