@@ -11,7 +11,7 @@ import axios from "axios";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
 import { PUBLIC_FOLDER } from '../../utils/config';
 
-const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
+let API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
 
 function resolveImageUrl(src) {
   if (!src) return null;
@@ -35,7 +35,7 @@ function resolveImageUrl(src) {
 }
 
 
-const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
+let API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
 const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || PUBLIC_FOLDER || `${API_BASE}/images/`;
 
 const Post = ({ data }) => {
