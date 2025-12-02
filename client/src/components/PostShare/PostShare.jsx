@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { uploadImage, uploadPost } from "../../actions/UploadAction";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png"
 import { PUBLIC_FOLDER } from '../../utils/config';
+import { uploadFile } from "../../api/uploadFile";
 
 const PostShare = () => {
   const dispatch = useDispatch();
@@ -29,30 +30,60 @@ const PostShare = () => {
   const imageRef = useRef();
 
   // handle post upload
+  // const handleUpload = async (e) => {
+  //   e.preventDefault();
+
+  //   //post data
+  //   const newPost = {
+  //     userId: user._id,
+  //     desc: desc.current.value,
+  //   };
+
+  //   // if there is an image with post
+  //   if (image) {
+  //     const data = new FormData();
+  //     const fileName = Date.now() + image.name;
+  //     data.append("name", fileName);
+  //     data.append("file", image);
+  //     newPost.image = fileName;
+  //     try {
+  //       dispatch(uploadImage(data));
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  //   dispatch(uploadPost(newPost));
+  //   resetShare();
+  // };
+
+
+  // handle post upload
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    //post data
+    // post data
     const newPost = {
       userId: user._id,
       desc: desc.current.value,
     };
 
-    // if there is an image with post
-    if (image) {
-      const data = new FormData();
-      const fileName = Date.now() + image.name;
-      data.append("name", fileName);
-      data.append("file", image);
-      newPost.image = fileName;
-      try {
-        dispatch(uploadImage(data));
-      } catch (err) {
-        console.log(err);
+    try {
+      // If there is an image, upload it first to your GridFS endpoint
+      if (image) {
+        // uploadFile returns { filename, fileId } (based on server)
+        const uploadRes = await uploadFile(image, user._id);
+        // prefer filename for simple GET /images/:filename display; can use fileId too
+        const returnedName = uploadRes.filename || uploadRes.fileId;
+        newPost.image = returnedName;
       }
+
+      // create post (dispatch action or direct axios call)
+      // you already use Redux action uploadPost(newPost) — keep using it
+      dispatch(uploadPost(newPost));
+      resetShare();
+    } catch (err) {
+      console.error("Error in handleUpload:", err);
     }
-    dispatch(uploadPost(newPost));
-    resetShare();
   };
 
   // Reset Post Share
@@ -109,7 +140,7 @@ const PostShare = () => {
           </button>
 
           <div style={{ display: "none" }}>
-            <input type="file" ref={imageRef} onChange={onImageChange} style={{width:"100%",height:"100%"}}/>
+            <input type="file" ref={imageRef} onChange={onImageChange} style={{ width: "100%", height: "100%" }} />
           </div>
         </div>
 

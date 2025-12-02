@@ -5,65 +5,63 @@ import mongoose from "mongoose";
 import { Readable } from "stream";
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() }); // store file in memory then stream to GridFS
+const upload = multer({ storage: multer.memoryStorage() }); // hold file in memory, then stream to GridFS
 
-// gridfs bucket reference will be set after mongoose connects
 let gfsBucket = null;
-const initGrid = () => {
-  if (!mongoose.connection.db) {
-    throw new Error("mongoose not connected yet");
+function initGrid() {
+  if (!mongoose.connection.db) throw new Error("mongoose not connected");
+  if (!gfsBucket) {
+    gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: "images",
+    });
   }
-  gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-    bucketName: "images",
-  });
-};
+}
 
-// Upload endpoint: accepts form-data key "file"
+// POST /images/upload
+// Expects form-data with key "file"
 router.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    if (!gfsBucket) initGrid();
+    initGrid();
+    if (!req.file || !req.file.buffer) return res.status(400).json({ error: "No file uploaded" });
 
-    if (!req.file || !req.file.buffer) return res.status(400).json({ msg: "No file" });
-
-    const fileName = req.file.originalname; // you can prefix with user id or unique token if needed
+    // choose identifier: use a unique filename OR return the upload id
+    // We will upload using originalname prefixed with timestamp to avoid collisions
+    const filename = `${Date.now()}-${req.file.originalname}`;
     const readStream = Readable.from(req.file.buffer);
 
-    const uploadStream = gfsBucket.openUploadStream(fileName, {
+    const uploadStream = gfsBucket.openUploadStream(filename, {
       contentType: req.file.mimetype,
-      metadata: { uploadedAt: new Date() },
+      metadata: { uploadedAt: new Date(), uploader: req.body.uploader || null },
     });
 
     readStream.pipe(uploadStream)
       .on("error", (err) => {
         console.error("GridFS upload error:", err);
-        res.status(500).json({ msg: "Upload failed" });
+        res.status(500).json({ error: "Upload failed" });
       })
       .on("finish", () => {
-        // uploadStream.id is the ObjectId of the stored file
-        return res.status(200).json({ fileId: uploadStream.id.toString(), filename: fileName });
+        // return both filename and fileId (ObjectId) — store whichever you prefer in Mongo documents
+        res.status(200).json({ filename, fileId: uploadStream.id.toString() });
       });
-
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-// Download endpoint: by filename
+// GET /images/:filename  -> stream by name
 router.get("/:filename", async (req, res) => {
   try {
-    if (!gfsBucket) initGrid();
+    initGrid();
     const filename = req.params.filename;
-
-    // find file by filename (if multiple exist, it returns the first)
+    // find file document
     const files = await mongoose.connection.db.collection("images.files").find({ filename }).toArray();
     if (!files || files.length === 0) return res.status(404).send("File not found");
 
     const fileDoc = files[0];
     res.set("Content-Type", fileDoc.contentType || "application/octet-stream");
-    const downloadStream = gfsBucket.openDownloadStreamByName(filename);
-    downloadStream.pipe(res).on("error", (err) => {
-      console.error("GridFS download error:", err);
+    gfsBucket.openDownloadStreamByName(filename).pipe(res).on("error", (err) => {
+      console.error("GridFS read error", err);
       res.sendStatus(500);
     });
   } catch (err) {
@@ -72,18 +70,16 @@ router.get("/:filename", async (req, res) => {
   }
 });
 
-// Optional: download by id route
+// GET /images/id/:id -> stream by id
 router.get("/id/:id", async (req, res) => {
   try {
-    if (!gfsBucket) initGrid();
-    const ObjectId = mongoose.Types.ObjectId;
-    const id = new ObjectId(req.params.id);
+    initGrid();
+    const id = new mongoose.Types.ObjectId(req.params.id);
     const files = await mongoose.connection.db.collection("images.files").find({ _id: id }).toArray();
     if (!files || files.length === 0) return res.status(404).send("File not found");
     const fileDoc = files[0];
     res.set("Content-Type", fileDoc.contentType || "application/octet-stream");
-    const downloadStream = gfsBucket.openDownloadStream(id);
-    downloadStream.pipe(res);
+    gfsBucket.openDownloadStream(id).pipe(res);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
