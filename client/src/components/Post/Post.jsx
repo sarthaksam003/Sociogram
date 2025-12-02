@@ -1,3 +1,4 @@
+// client/src/components/Post/Post.jsx
 import React, { useState, useEffect } from "react";
 import "./Post.css";
 import Comment from "../../img/comment.png";
@@ -18,18 +19,13 @@ const Post = ({ data }) => {
   const [liked, setLiked] = useState(Array.isArray(data.likes) ? data.likes.includes(user._id) : false);
   const [likes, setLikes] = useState(Array.isArray(data.likes) ? data.likes.length : 0);
 
-  // comments state holds objects like { commentor: <id>, cmnt: <text> }
   const [comments, setComments] = useState(Array.isArray(data.comments) ? data.comments.filter(Boolean) : []);
   const [commentText, setCommentText] = useState("");
 
-  // poster is the post author user object (not a string)
   const [poster, setPoster] = useState(null);
-
-  // commenter cache: { userId: userObject }
   const [commenterMap, setCommenterMap] = useState({});
 
   useEffect(() => {
-    // fetch poster (author) object
     const fetchPoster = async () => {
       try {
         if (!data?.userId) return;
@@ -41,12 +37,10 @@ const Post = ({ data }) => {
       }
     };
 
-    // sync comments when data changes
     setComments(Array.isArray(data.comments) ? data.comments.filter(Boolean) : []);
     fetchPoster();
   }, [data.userId, data.comments]);
 
-  // fetch commenter details for any commenter IDs not in cache
   useEffect(() => {
     const ids = Array.from(new Set(comments.map(c => c?.commentor).filter(Boolean)));
     const idsToFetch = ids.filter(id => !commenterMap[id] && id !== user._id);
@@ -89,14 +83,11 @@ const Post = ({ data }) => {
     try {
       await axios.put(`${API_BASE}/posts/addcomment/${data._id}`, { comment: newComment });
 
-      // optimistic UI update
       setComments(prev => [...prev, newComment]);
-      // cache current user in commenterMap so UI can show name/avatar immediately
       setCommenterMap(prev => ({ ...prev, [user._id]: user }));
       setCommentText("");
     } catch (err) {
       console.error("Add comment failed!", err);
-      // optional: show feedback to user
     }
   };
 
@@ -127,7 +118,7 @@ const Post = ({ data }) => {
 
       {data.image ? (
         <img
-          src={buildAvatarSrc(data.image)} // if data.image is a filename, PUBLIC will resolve; if full URL, it will work too
+          src={buildAvatarSrc(data.image)}
           alt=""
           style={{ objectFit: "contain", width: "100%", marginTop: "8px" }}
           onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
