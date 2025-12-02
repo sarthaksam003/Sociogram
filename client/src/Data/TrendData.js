@@ -1,14 +1,14 @@
 export const TrendData= [
   {
-    name: "Ram Mandir",
+    name: "Black Friday",
+    shares: 636.5,
+  },
+  {
+    name: "Thanksgiving",
     shares: 240,
   },
   {
-    name: "Don3",
-    shares: 80.5,
-  },
-  {
-    name: "CDAC",
+    name: "OpenAI",
     shares: 75.5,
   },
   {
@@ -20,7 +20,7 @@ export const TrendData= [
     shares: 71.9,
   },
   {
-    name: "UPpolicepaperleak",
-    shares: 636,
+    name: "Hamas",
+    shares: 36,
   },
 ];

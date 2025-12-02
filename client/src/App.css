@@ -28,6 +28,12 @@
   background: #202124;
   padding: 1rem 1rem;
 }
+.App-dark {
+  overflow: hidden;
+  color: var(--black);
+  background: #202124;
+  padding: 1rem 1rem;
+}
 
 /* blur */
 .blur {

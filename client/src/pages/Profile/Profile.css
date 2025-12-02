@@ -1,4 +1,4 @@
-.Profile{
+.Profile {
     position: relative;
     display: grid;
     grid-template-columns: 18rem auto 20rem;
@@ -6,8 +6,37 @@
 }
 
 
-.Profile-center{
+.Profile-center {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.profile-pc {
+    display: inline;
+}
+
+.profile-mob {
+    display: none;
+}
+
+@media screen and (max-width: 769px) {
+    .Profile {
+        display: flex;
+        flex-direction: column !important;
+    }
+
+    .profile-pc {
+        display: none;
+    }
+
+    .profile-mob {
+        display: inline;
+    }
+
+    .Profile-center {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 }

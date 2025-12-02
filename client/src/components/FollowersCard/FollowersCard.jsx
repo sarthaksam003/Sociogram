@@ -18,26 +18,29 @@ const FollowersCard = ({ location }) => {
 
   return (
     <React.Fragment>
-      <h3 className="peopleYouMayKnowHeading">People you may know</h3>
-      <div className="FollowersCard">
-        {persons
-          .filter((person) => person._id !== user._id)
-          .map((person, id) => (
-            <User person={person} key={id} />
-          ))}
+      <div className="FollowersCardLayout">
 
-        <FollowersModal
-          modalOpened={modalOpened}
-          setModalOpened={setModalOpened}
-        />
+        <h3 className="peopleYouMayKnowHeading">People you may know</h3>
+        <div className="FollowersCard">
+          {persons
+            .filter((person) => person._id !== user._id)
+            .map((person, id) => (
+              <User person={person} key={id} />
+            ))}
+
+          <FollowersModal
+            modalOpened={modalOpened}
+            setModalOpened={setModalOpened}
+          />
+        </div>
+        {!location ? (
+          <span className="showMoreText" onClick={() => setModalOpened(true)}>
+            Show more
+          </span>
+        ) : (
+          ""
+        )}
       </div>
-      {!location ? (
-        <span className="showMoreText" onClick={() => setModalOpened(true)}>
-          Show more
-        </span>
-      ) : (
-        ""
-      )}
     </React.Fragment>
   );
 };

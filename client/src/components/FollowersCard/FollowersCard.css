@@ -8,6 +8,7 @@
   max-height: 10rem;
   overflow-y: scroll;
 }
+
 .FollowersCardModalOpened {
   width: 100%;
   border-radius: 0.7rem;
@@ -22,6 +23,7 @@
 .peopleYouMayKnowHeading {
   color: var(--purple);
 }
+
 .follower {
   display: flex;
   justify-content: space-between;
@@ -31,7 +33,7 @@
   border-radius: 1rem;
 }
 
-.follower > div {
+.follower>div {
   display: flex;
   gap: 10px;
 }
@@ -49,7 +51,7 @@
   justify-content: center;
 }
 
-.name > span:nth-of-type(1) {
+.name>span:nth-of-type(1) {
   font-weight: bold;
 }
 
@@ -71,4 +73,10 @@
   color: var(--purple);
   align-self: center;
   cursor: pointer;
+}
+
+@media screen and (max-width: 769px) {
+  .FollowersCardLayout {
+    display: none;
+  }
 }

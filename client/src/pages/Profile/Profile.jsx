@@ -10,13 +10,27 @@ const Profile = () => {
   }, []);
 
   return (
-    <div className="Profile">
-      <ProfileLeft />
-      <div className="Profile-center">
-        <ProfileCard location="profilePage" />
-        <PostSide />
+    <div className="">
+      <div className="Profile profile-pc">
+        <div>
+          <ProfileLeft />
+        </div>
+        <div className="Profile-center">
+          <ProfileCard location="profilePage" />
+          <PostSide />
+        </div>
+        <RightSide />
       </div>
-      <RightSide />
+      <div className="Profile profile-mob">
+        <div>
+          <ProfileLeft />
+        </div>
+        <div className="Profile-center">
+          <ProfileCard location="profilePage" />
+          <PostSide />
+        </div>
+        <RightSide />
+      </div>
     </div>
   );
 };

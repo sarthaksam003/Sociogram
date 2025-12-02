@@ -1,0 +1,49 @@
+.navIcons {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #2C344F;
+}
+
+.navIcons>a>img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.navIcons>img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.navIcons>img:hover {
+    cursor: pointer;
+}
+
+.logout-button {
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.5rem;
+    background-color: #f1356d;
+}
+
+@media screen and (max-width: 769px) {
+    .navIcons {
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+        margin: 0;
+        left: 0;
+        padding: 0.5rem;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        color: black;
+        background-color: white;
+    }
+
+    .logout-button {
+        padding: 0.3rem 0.6rem;
+        margin-right: 1rem;
+    }
+
+
+}

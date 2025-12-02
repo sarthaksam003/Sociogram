@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/AuthActions";
-
+import styles from "./NavIcons.module.css"
 // import Home from "../../img/home.svg";
 // import dark from "../../img/dark.svg";
 // import Comment from "../../img/comment.png";
@@ -21,13 +21,13 @@ const NavIcons = () => {
     dispatch(logout())
   }
   return (
-    <div className="navIcons">
+    <div className={styles["navIcons"]} style={{ backgroundColor: mode ? "#202124" : "" }}>
       <Link to="../home">
-        <UilEstate style={{ color: mode ? "white" : "#2C344F" }} alt="Home" />
+        <UilEstate alt="Home" style={{ color: mode ? "white" : "#2C344F" }} />
       </Link>
       {mode ? (
         <UilSun
-          style={{ cursor: "pointer", color: "white" }}
+          style={{ cursor: "pointer", color: mode ? "white" : "#2C344F" }}
           onClick={() => {
             setMode(false);
             document.getElementById("App").classList.remove("App-dark");
@@ -36,7 +36,7 @@ const NavIcons = () => {
         />
       ) : (
         <UilMoon
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", color: mode ? "white" : "#2C344F" }}
           onClick={() => {
             setMode(true);
             document.getElementById("App").classList.remove("App");
@@ -50,8 +50,8 @@ const NavIcons = () => {
           style={{ cursor: "pointer", color: mode ? "white" : "#2C344F" }}
         />
       </Link>
-      <div className="button logout-button"
-        style={{ cursor: "pointer", color: mode ? "white" : "#2C344F", color: "white", padding: "0.3rem 0.6rem", borderRadius: "0.5rem", backgroundColor: "#f1356d" }}
+      <div className={`button ${styles["logout-button"]}`}
+        style={{ cursor: "pointer" }}
         onClick={handleLogOut}
       >Logout</div>
     </div>

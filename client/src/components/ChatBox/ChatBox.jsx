@@ -6,12 +6,12 @@ import "./ChatBox.css";
 import { format } from "timeago.js";
 import InputEmoji from 'react-input-emoji'
 
-const ChatBox = ({ chat, currentUser, setSendMessage,  receivedMessage }) => {
+const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleChange = (newMessage)=> {
+  const handleChange = (newMessage) => {
     setNewMessage(newMessage)
   }
 
@@ -46,43 +46,42 @@ const ChatBox = ({ chat, currentUser, setSendMessage,  receivedMessage }) => {
 
 
   // Always scroll to last Message
-  useEffect(()=> {
+  useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
-  },[messages])
+  }, [messages])
 
 
 
   // Send Message
-  const handleSend = async(e)=> {
+  const handleSend = async (e) => {
     e.preventDefault()
     const message = {
-      senderId : currentUser,
+      senderId: currentUser,
       text: newMessage,
       chatId: chat._id,
-  }
-  const receiverId = chat.members.find((id)=>id!==currentUser);
-  // send message to socket server
-  setSendMessage({...message, receiverId})
-  // send message to database
-  try {
-    const { data } = await addMessage(message);
-    setMessages([...messages, data]);
-    setNewMessage("");
-  }
-  catch
-  {
-    console.log("error")
-  }
-}
-
-// Receive Message from parent component
-useEffect(()=> {
-  // console.log("Message Arrived: ", receivedMessage)
-  if (receivedMessage !== null && receivedMessage.chatId === chat._id) {
-    setMessages([...messages, receivedMessage]);
+    }
+    const receiverId = chat.members.find((id) => id !== currentUser);
+    // send message to socket server
+    setSendMessage({ ...message, receiverId })
+    // send message to database
+    try {
+      const { data } = await addMessage(message);
+      setMessages([...messages, data]);
+      setNewMessage("");
+    }
+    catch {
+      console.log("error")
+    }
   }
 
-},[receivedMessage, messages, chat])
+  // Receive Message from parent component
+  useEffect(() => {
+    // console.log("Message Arrived: ", receivedMessage)
+    if (receivedMessage !== null && receivedMessage.chatId === chat._id) {
+      setMessages([...messages, receivedMessage]);
+    }
+
+  }, [receivedMessage, messages, chat])
 
 
 
@@ -90,7 +89,7 @@ useEffect(()=> {
   const imageRef = useRef();
   return (
     <>
-      <div className="ChatBox-container">
+      <div className="ChatBox-container" >
         {chat ? (
           <>
             {/* chat-header */}
@@ -101,9 +100,9 @@ useEffect(()=> {
                     src={
                       userData?.profilePicture
                         ? process.env.REACT_APP_PUBLIC_FOLDER +
-                          userData.profilePicture
+                        userData.profilePicture
                         : process.env.REACT_APP_PUBLIC_FOLDER +
-                          "defaultProfile.png"
+                        "defaultProfile.png"
                     }
                     alt="Profile"
                     className="followerImage"
@@ -125,7 +124,7 @@ useEffect(()=> {
               />
             </div>
             {/* chat-body */}
-            <div className="chat-body" >
+            <div className="chat-body"  >
               {messages.map((message) => (
                 <>
                   <div ref={scroll}
@@ -142,13 +141,13 @@ useEffect(()=> {
               ))}
             </div>
             {/* chat-sender */}
-            <div className="chat-sender">
+            <div className="chat-sender" >
               <div onClick={() => imageRef.current.click()}>+</div>
               <InputEmoji
                 value={newMessage}
                 onChange={handleChange}
               />
-              <div className="send-button button" onClick = {handleSend}>Send</div>
+              <div className="send-button button" onClick={handleSend}>Send</div>
               <input
                 type="file"
                 name=""
@@ -159,9 +158,14 @@ useEffect(()=> {
             </div>{" "}
           </>
         ) : (
-          <span className="chatbox-empty-message">
-            Tap on a chat to start conversation...
-          </span>
+          <>
+            <span className="chatbox-empty-message" >
+              Tap on a chat to start conversation...
+            </span>
+            {messages ? <span className="chatbox-empty-message" style={{color:"#CFD0D0"}}>
+              No conversations found. Choose a user on the left to start now!
+            </span> : ""}
+          </>
         )}
       </div>
     </>
