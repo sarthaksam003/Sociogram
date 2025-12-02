@@ -2,6 +2,30 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getUser } from "../../api/UserRequests";
+
+const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
+
+function resolveImageUrl(src) {
+  if (!src) return null;
+  try {
+    const s = String(src);
+    if (/^https?:\/\//.test(s)) {
+      if (s.includes('localhost')) {
+        const api = new URL(API_BASE);
+        // extract path after host
+        const parts = s.split('/').slice(3);
+        const path = parts.join('/');
+        return api.origin + '/' + path;
+      }
+      return s;
+    }
+    const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || (API_BASE + '/images/');
+    return PUBLIC + src;
+  } catch (e) {
+    return src;
+  }
+}
+
 const Conversation = ({ data, currentUser, online }) => {
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();

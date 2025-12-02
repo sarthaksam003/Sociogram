@@ -12,6 +12,30 @@ import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
 import { PUBLIC_FOLDER } from '../../utils/config';
 
 const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
+
+function resolveImageUrl(src) {
+  if (!src) return null;
+  try {
+    const s = String(src);
+    if (/^https?:\/\//.test(s)) {
+      if (s.includes('localhost')) {
+        const api = new URL(API_BASE);
+        // extract path after host
+        const parts = s.split('/').slice(3);
+        const path = parts.join('/');
+        return api.origin + '/' + path;
+      }
+      return s;
+    }
+    const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || (API_BASE + '/images/');
+    return PUBLIC + src;
+  } catch (e) {
+    return src;
+  }
+}
+
+
+const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
 const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || PUBLIC_FOLDER || `${API_BASE}/images/`;
 
 const Post = ({ data }) => {
@@ -91,19 +115,14 @@ const Post = ({ data }) => {
     }
   };
 
-  const buildAvatarSrc = (profilePicture) => {
-    if (!profilePicture) return placeHolderProfilePic;
-    if (typeof profilePicture === "string" && profilePicture.startsWith("http")) return profilePicture;
-    if (typeof profilePicture === "string" && profilePicture.startsWith("data:")) return profilePicture;
-    return PUBLIC + profilePicture;
-  };
+  const buildAvatarSrc = (profilePicture) => resolveImageUrl(profilePicture) || placeHolderProfilePic;
 
   return (
     <div className="Post">
       <div className="detail">
         <span style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={buildAvatarSrc(poster?.profilePicture)}
+            src={resolveImageUrl(poster?.profilePicture) || placeHolderProfilePic}
             alt="Profile"
             style={{ width: "3rem", height: "3rem", objectFit: "cover", borderRadius: "50%" }}
             onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
@@ -118,7 +137,7 @@ const Post = ({ data }) => {
 
       {data.image ? (
         <img
-          src={buildAvatarSrc(data.image)}
+          src={resolveImageUrl(data.image) || placeHolderProfilePic}
           alt=""
           style={{ objectFit: "contain", width: "100%", marginTop: "8px" }}
           onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}

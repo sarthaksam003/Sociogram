@@ -11,7 +11,6 @@ import AuthRoute from "./routes/AuthRoute.js";
 import UserRoute from "./routes/UserRoute.js";
 import PostRoute from "./routes/PostRoute.js";
 import UploadRoute from "./routes/UploadRoute.js";
-import gridfsRouter from "./routes/gridfs.js";
 
 const app = express();
 

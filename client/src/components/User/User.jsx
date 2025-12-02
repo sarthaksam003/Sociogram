@@ -5,6 +5,30 @@ import { followUser, unfollowUser } from "../../actions/UserAction";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
 import { PUBLIC_FOLDER as CONFIG_PUBLIC_FOLDER } from '../../utils/config';
 
+const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
+
+function resolveImageUrl(src) {
+  if (!src) return null;
+  try {
+    const s = String(src);
+    if (/^https?:\/\//.test(s)) {
+      if (s.includes('localhost')) {
+        const api = new URL(API_BASE);
+        // extract path after host
+        const parts = s.split('/').slice(3);
+        const path = parts.join('/');
+        return api.origin + '/' + path;
+      }
+      return s;
+    }
+    const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || (API_BASE + '/images/');
+    return PUBLIC + src;
+  } catch (e) {
+    return src;
+  }
+}
+
+
 // prefer explicit env var, then config export, then empty string
 const PUBLIC_FOLDER = process.env.REACT_APP_PUBLIC_FOLDER || CONFIG_PUBLIC_FOLDER || '';
 
