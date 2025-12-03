@@ -30,7 +30,7 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
   };
 
   // form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let UserData = formData;
     if (profileImage) {
@@ -40,7 +40,9 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
       data.append("file", profileImage);
       UserData.profilePicture = fileName;
       try {
-        dispatch(uploadImage(data));
+        const token = JSON.parse(localStorage.getItem("profile"))?.token;
+        const uploadRes = await uploadFile(imageFile, token);  // imageFile = selected file
+        profileData.profilePicture = uploadRes.filename;       // or uploadRes.url
       } catch (err) {
         console.log(err);
       }
@@ -52,7 +54,9 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
       data.append("file", coverImage);
       UserData.coverPicture = fileName;
       try {
-        dispatch(uploadImage(data));
+        const token = JSON.parse(localStorage.getItem("profile"))?.token;
+        const uploadRes = await uploadFile(imageFile, token);  // imageFile = selected file
+        profileData.profilePicture = uploadRes.filename;       // or uploadRes.url
       } catch (err) {
         console.log(err);
       }

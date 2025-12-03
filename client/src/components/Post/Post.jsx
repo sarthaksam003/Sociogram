@@ -9,40 +9,23 @@ import { likePost } from "../../api/PostsRequests";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
-import { PUBLIC_FOLDER } from '../../utils/config';
 
-let API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
-
-function resolveImageUrl(src) {
-  if (!src) return null;
-  try {
-    const s = String(src);
-    if (/^https?:\/\//.test(s)) {
-      if (s.includes('localhost')) {
-        const api = new URL(API_BASE);
-        // extract path after host
-        const parts = s.split('/').slice(3);
-        const path = parts.join('/');
-        return api.origin + '/' + path;
-      }
-      return s;
-    }
-    const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || (API_BASE + '/images/');
-    return PUBLIC + src;
-  } catch (e) {
-    return src;
-  }
-}
-
-
-const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || PUBLIC_FOLDER || `${API_BASE}/images/`;
+const API_BASE = process.env.REACT_APP_API_URL;
+const PF = process.env.REACT_APP_PUBLIC_FOLDER; 
+// should be: https://sociogram-backend-v2ax.onrender.com/images/
 
 const Post = ({ data }) => {
   const { user } = useSelector((state) => state.authReducer.authData);
-  const [liked, setLiked] = useState(Array.isArray(data.likes) ? data.likes.includes(user._id) : false);
-  const [likes, setLikes] = useState(Array.isArray(data.likes) ? data.likes.length : 0);
+  const [liked, setLiked] = useState(
+    Array.isArray(data.likes) ? data.likes.includes(user._id) : false
+  );
+  const [likes, setLikes] = useState(
+    Array.isArray(data.likes) ? data.likes.length : 0
+  );
 
-  const [comments, setComments] = useState(Array.isArray(data.comments) ? data.comments.filter(Boolean) : []);
+  const [comments, setComments] = useState(
+    Array.isArray(data.comments) ? data.comments.filter(Boolean) : []
+  );
   const [commentText, setCommentText] = useState("");
 
   const [poster, setPoster] = useState(null);
@@ -60,13 +43,19 @@ const Post = ({ data }) => {
       }
     };
 
-    setComments(Array.isArray(data.comments) ? data.comments.filter(Boolean) : []);
+    setComments(
+      Array.isArray(data.comments) ? data.comments.filter(Boolean) : []
+    );
     fetchPoster();
   }, [data.userId, data.comments]);
 
   useEffect(() => {
-    const ids = Array.from(new Set(comments.map(c => c?.commentor).filter(Boolean)));
-    const idsToFetch = ids.filter(id => !commenterMap[id] && id !== user._id);
+    const ids = Array.from(
+      new Set(comments.map((c) => c?.commentor).filter(Boolean))
+    );
+    const idsToFetch = ids.filter(
+      (id) => !commenterMap[id] && id !== user._id
+    );
 
     if (idsToFetch.length === 0) return;
 
@@ -75,7 +64,7 @@ const Post = ({ data }) => {
         const res = await axios.get(`${API_BASE}/user/${id}`);
         return { id, userObj: res.data };
       } catch (err) {
-        console.error("fetch commenter failed for", id, err);
+        console.error("fetch commenter failed:", err);
         return null;
       }
     });
@@ -83,17 +72,18 @@ const Post = ({ data }) => {
     (async () => {
       const results = await Promise.all(fetchers);
       const next = {};
-      results.forEach(r => {
+      results.forEach((r) => {
         if (r && r.userObj) next[r.id] = r.userObj;
       });
-      if (Object.keys(next).length) setCommenterMap(prev => ({ ...prev, ...next }));
+      if (Object.keys(next).length)
+        setCommenterMap((prev) => ({ ...prev, ...next }));
     })();
   }, [comments, commenterMap, user._id]);
 
   const handleLike = () => {
     likePost(data._id, user._id);
-    setLiked(prev => !prev);
-    setLikes(prev => (liked ? prev - 1 : prev + 1));
+    setLiked((prev) => !prev);
+    setLikes((prev) => (liked ? prev - 1 : prev + 1));
   };
 
   const addCommentHandler = async (e) => {
@@ -104,29 +94,41 @@ const Post = ({ data }) => {
     const newComment = { commentor: user._id, cmnt: text };
 
     try {
-      await axios.put(`${API_BASE}/posts/addcomment/${data._id}`, { comment: newComment });
+      await axios.put(`${API_BASE}/posts/addcomment/${data._id}`, {
+        comment: newComment,
+      });
 
-      setComments(prev => [...prev, newComment]);
-      setCommenterMap(prev => ({ ...prev, [user._id]: user }));
+      setComments((prev) => [...prev, newComment]);
+      setCommenterMap((prev) => ({ ...prev, [user._id]: user }));
       setCommentText("");
     } catch (err) {
-      console.error("Add comment failed!", err);
+      console.error("Add comment failed:", err);
     }
   };
 
-  const buildAvatarSrc = (profilePicture) => resolveImageUrl(profilePicture) || placeHolderProfilePic;
+  const avatar = (picture) =>
+    picture ? PF + picture : placeHolderProfilePic;
 
   return (
     <div className="Post">
       <div className="detail">
         <span style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={resolveImageUrl(poster?.profilePicture) || placeHolderProfilePic}
+            src={avatar(poster?.profilePicture)}
             alt="Profile"
-            style={{ width: "3rem", height: "3rem", objectFit: "cover", borderRadius: "50%" }}
-            onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
+            style={{
+              width: "3rem",
+              height: "3rem",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+            onError={(e) =>
+              (e.currentTarget.src = placeHolderProfilePic)
+            }
           />
-          <b style={{ margin: "0 1rem" }}>{poster ? `${poster.firstname} ${poster.lastname}` : "Unknown"}</b>
+          <b style={{ margin: "0 1rem" }}>
+            {poster ? `${poster.firstname} ${poster.lastname}` : "Unknown"}
+          </b>
         </span>
       </div>
 
@@ -134,44 +136,86 @@ const Post = ({ data }) => {
         <span>{data.desc}</span>
       </div>
 
-      {data.image ? (
+      {data.image && (
         <img
-          src={resolveImageUrl(data.image) || placeHolderProfilePic}
-          alt=""
+          src={avatar(data.image)}
+          alt="Post"
           style={{ objectFit: "contain", width: "100%", marginTop: "8px" }}
-          onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
+          onError={(e) =>
+            (e.currentTarget.src = placeHolderProfilePic)
+          }
         />
-      ) : null}
+      )}
 
       <div className="postReact">
-        <img src={liked ? Heart : NotLike} alt="" style={{ cursor: "pointer" }} onClick={handleLike} />
+        <img
+          src={liked ? Heart : NotLike}
+          alt=""
+          style={{ cursor: "pointer" }}
+          onClick={handleLike}
+        />
         <img src={Comment} alt="" style={{ cursor: "pointer" }} />
         <img src={Share} alt="" />
       </div>
 
-      <span style={{ color: "var(--gray)", fontSize: "12px" }}>{likes} likes</span>
+      <span style={{ color: "var(--gray)", fontSize: "12px" }}>
+        {likes} likes
+      </span>
 
       <div>
         <span style={{ color: "var(--gray)", fontSize: "12px" }}>
-          {comments.length} {comments.length > 1 || comments.length === 0 ? "Comments" : "Comment"}
+          {comments.length}{" "}
+          {comments.length > 1 || comments.length === 0
+            ? "Comments"
+            : "Comment"}
         </span>
 
         <div>
           <ul style={{ padding: 0, listStyle: "none", marginTop: 8 }}>
             {comments.filter(Boolean).map((item, idx) => {
-              const commenter = item?.commentor === user._id ? user : (commenterMap[item?.commentor] || null);
+              const commenter =
+                item?.commentor === user._id
+                  ? user
+                  : commenterMap[item?.commentor];
               return (
-                <li key={`${item?.commentor ?? 'anon'}-${idx}`} style={{ marginBottom: 8 }}>
-                  <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <li
+                  key={`${item?.commentor ?? "anon"}-${idx}`}
+                  style={{ marginBottom: 8 }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <img
-                      src={buildAvatarSrc(commenter?.profilePicture)}
+                      src={avatar(commenter?.profilePicture)}
                       alt="cmt-profile"
-                      style={{ width: "3rem", height: "3rem", objectFit: "cover", borderRadius: "50%" }}
-                      onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
+                      style={{
+                        width: "3rem",
+                        height: "3rem",
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                      }}
+                      onError={(e) =>
+                        (e.currentTarget.src = placeHolderProfilePic)
+                      }
                     />
-                    <div style={{ backgroundColor: "#F0F1F1", padding: "0.75rem 1rem", borderRadius: "1rem", width: "100%" }}>
+                    <div
+                      style={{
+                        backgroundColor: "#F0F1F1",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "1rem",
+                        width: "100%",
+                      }}
+                    >
                       <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                        {commenter ? `${commenter.firstname} ${commenter.lastname}` : (item?.commentor === user._id ? `${user.firstname} ${user.lastname}` : "Unknown")}
+                        {commenter
+                          ? `${commenter.firstname} ${commenter.lastname}`
+                          : item?.commentor === user._id
+                          ? `${user.firstname} ${user.lastname}`
+                          : "Unknown"}
                       </div>
                       <div>{item?.cmnt ?? ""}</div>
                     </div>
@@ -189,7 +233,9 @@ const Post = ({ data }) => {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
           />
-          <button type="submit" className="commentFormButton button">Add comment</button>
+          <button type="submit" className="commentFormButton button">
+            Add comment
+          </button>
         </form>
       </div>
     </div>
