@@ -3,19 +3,21 @@ import { Modal, useMantineTheme } from "@mantine/core";
 import "./ProfileModal.css";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { uploadImage } from "../../actions/UploadAction";
 import { updateUser } from "../../actions/UserAction";
+import { uploadFile } from "../../api/uploadFile";   // IMPORTANT
 
 const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
   const theme = useMantineTheme();
+
   const { password, ...other } = data;
   const [formData, setFormData] = useState(other);
+
   const [profileImage, setProfileImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
+
   const dispatch = useDispatch();
   const param = useParams();
 
-  // const { user } = useSelector((state) => state.authReducer.authData);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -23,46 +25,43 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
       let img = event.target.files[0];
-      event.target.name === "profileImage"
-        ? setProfileImage(img)
-        : setCoverImage(img);
+
+      if (event.target.name === "profileImage") {
+        setProfileImage(img);
+      } else {
+        setCoverImage(img);
+      }
     }
   };
 
-  // form submission
+  // ---------- FIXED SUBMISSION ----------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let UserData = formData;
-    if (profileImage) {
-      const data = new FormData();
-      const fileName = Date.now() + profileImage.name;
-      data.append("name", fileName);
-      data.append("file", profileImage);
-      UserData.profilePicture = fileName;
-      try {
-        const token = JSON.parse(localStorage.getItem("profile"))?.token;
-        const uploadRes = await uploadFile(imageFile, token);  // imageFile = selected file
-        profileData.profilePicture = uploadRes.filename;       // or uploadRes.url
-      } catch (err) {
-        console.log(err);
+
+    let userData = { ...formData };
+
+    try {
+      const token = JSON.parse(localStorage.getItem("profile"))?.token;
+
+      // upload profile image if selected
+      if (profileImage) {
+        const res = await uploadFile(profileImage, token);
+        userData.profilePicture = res.filename; // store filename in DB
       }
-    }
-    if (coverImage) {
-      const data = new FormData();
-      const fileName = Date.now() + coverImage.name;
-      data.append("name", fileName);
-      data.append("file", coverImage);
-      UserData.coverPicture = fileName;
-      try {
-        const token = JSON.parse(localStorage.getItem("profile"))?.token;
-        const uploadRes = await uploadFile(imageFile, token);  // imageFile = selected file
-        profileData.profilePicture = uploadRes.filename;       // or uploadRes.url
-      } catch (err) {
-        console.log(err);
+
+      // upload cover image if selected
+      if (coverImage) {
+        const res = await uploadFile(coverImage, token);
+        userData.coverPicture = res.filename;
       }
+
+      // update db user
+      dispatch(updateUser(param.id, userData));
+
+      setModalOpened(false);
+    } catch (err) {
+      console.error("Profile update failed:", err);
     }
-    dispatch(updateUser(param.id, UserData));
-    setModalOpened(false);
   };
 
   return (
@@ -80,6 +79,7 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
     >
       <form className="infoForm" onSubmit={handleSubmit}>
         <h3>Your Info</h3>
+
         <div>
           <input
             value={formData.firstname}
@@ -89,6 +89,7 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
             name="firstname"
             className="infoInput"
           />
+
           <input
             value={formData.lastname}
             onChange={handleChange}
@@ -119,6 +120,7 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
             name="livesIn"
             className="infoInput"
           />
+
           <input
             value={formData.country}
             onChange={handleChange}
@@ -141,9 +143,10 @@ const ProfileModal = ({ modalOpened, setModalOpened, data }) => {
         </div>
 
         <div>
-          Profile image
+          Profile image:
           <input type="file" name="profileImage" onChange={onImageChange} />
-          Cover image
+
+          Cover image:
           <input type="file" name="coverImage" onChange={onImageChange} />
         </div>
 

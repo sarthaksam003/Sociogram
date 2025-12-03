@@ -11,8 +11,7 @@ import axios from "axios";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
 
 const API_BASE = process.env.REACT_APP_API_URL;
-const PF = process.env.REACT_APP_PUBLIC_FOLDER; 
-// should be: https://sociogram-backend-v2ax.onrender.com/images/
+const PF = process.env.REACT_APP_PUBLIC_FOLDER; // e.g. https://sociogram-backend-v2ax.onrender.com/images/
 
 const Post = ({ data }) => {
   const { user } = useSelector((state) => state.authReducer.authData);
@@ -53,9 +52,7 @@ const Post = ({ data }) => {
     const ids = Array.from(
       new Set(comments.map((c) => c?.commentor).filter(Boolean))
     );
-    const idsToFetch = ids.filter(
-      (id) => !commenterMap[id] && id !== user._id
-    );
+    const idsToFetch = ids.filter((id) => !commenterMap[id] && id !== user._id);
 
     if (idsToFetch.length === 0) return;
 
@@ -106,8 +103,7 @@ const Post = ({ data }) => {
     }
   };
 
-  const avatar = (picture) =>
-    picture ? PF + picture : placeHolderProfilePic;
+  const avatar = (picture) => (picture ? PF + picture : placeHolderProfilePic);
 
   return (
     <div className="Post">
@@ -122,9 +118,7 @@ const Post = ({ data }) => {
               objectFit: "cover",
               borderRadius: "50%",
             }}
-            onError={(e) =>
-              (e.currentTarget.src = placeHolderProfilePic)
-            }
+            onError={(e) => (e.currentTarget.src = placeHolderProfilePic)}
           />
           <b style={{ margin: "0 1rem" }}>
             {poster ? `${poster.firstname} ${poster.lastname}` : "Unknown"}
@@ -141,9 +135,7 @@ const Post = ({ data }) => {
           src={avatar(data.image)}
           alt="Post"
           style={{ objectFit: "contain", width: "100%", marginTop: "8px" }}
-          onError={(e) =>
-            (e.currentTarget.src = placeHolderProfilePic)
-          }
+          onError={(e) => (e.currentTarget.src = placeHolderProfilePic)}
         />
       )}
 
@@ -165,18 +157,14 @@ const Post = ({ data }) => {
       <div>
         <span style={{ color: "var(--gray)", fontSize: "12px" }}>
           {comments.length}{" "}
-          {comments.length > 1 || comments.length === 0
-            ? "Comments"
-            : "Comment"}
+          {comments.length > 1 || comments.length === 0 ? "Comments" : "Comment"}
         </span>
 
         <div>
           <ul style={{ padding: 0, listStyle: "none", marginTop: 8 }}>
             {comments.filter(Boolean).map((item, idx) => {
               const commenter =
-                item?.commentor === user._id
-                  ? user
-                  : commenterMap[item?.commentor];
+                item?.commentor === user._id ? user : commenterMap[item?.commentor];
               return (
                 <li
                   key={`${item?.commentor ?? "anon"}-${idx}`}
@@ -198,9 +186,7 @@ const Post = ({ data }) => {
                         objectFit: "cover",
                         borderRadius: "50%",
                       }}
-                      onError={(e) =>
-                        (e.currentTarget.src = placeHolderProfilePic)
-                      }
+                      onError={(e) => (e.currentTarget.src = placeHolderProfilePic)}
                     />
                     <div
                       style={{

@@ -3,40 +3,14 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { followUser, unfollowUser } from "../../actions/UserAction";
 import placeHolderProfilePic from "../../img/fallback-profile-pic.png";
-import { PUBLIC_FOLDER as CONFIG_PUBLIC_FOLDER } from '../../utils/config';
 
 const API_BASE = process.env.REACT_APP_API_URL || "https://sociogram-backend-v2ax.onrender.com";
-
-function resolveImageUrl(src) {
-  if (!src) return null;
-  try {
-    const s = String(src);
-    if (/^https?:\/\//.test(s)) {
-      if (s.includes('localhost')) {
-        const api = new URL(API_BASE);
-        // extract path after host
-        const parts = s.split('/').slice(3);
-        const path = parts.join('/');
-        return api.origin + '/' + path;
-      }
-      return s;
-    }
-    const PUBLIC = process.env.REACT_APP_PUBLIC_FOLDER || (API_BASE + '/images/');
-    return PUBLIC + src;
-  } catch (e) {
-    return src;
-  }
-}
-
-
-// prefer explicit env var, then config export, then empty string
-const PUBLIC_FOLDER = process.env.REACT_APP_PUBLIC_FOLDER || CONFIG_PUBLIC_FOLDER || '';
+const PF = process.env.REACT_APP_PUBLIC_FOLDER || "";
 
 const User = ({ person, mode }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer.authData);
 
-  // guard if person.followers is undefined
   const initiallyFollowing = Array.isArray(person?.followers) ? person.followers.includes(user._id) : false;
   const [following, setFollowing] = useState(initiallyFollowing);
 
@@ -51,8 +25,9 @@ const User = ({ person, mode }) => {
 
   const buildAvatarSrc = (profilePicture) => {
     if (!profilePicture) return placeHolderProfilePic;
-    if (typeof profilePicture === "string" && (profilePicture.startsWith("http") || profilePicture.startsWith("data:"))) return profilePicture;
-    return PUBLIC_FOLDER + profilePicture;
+    if (typeof profilePicture === "string" && (profilePicture.startsWith("http") || profilePicture.startsWith("data:")))
+      return profilePicture;
+    return PF + profilePicture;
   };
 
   return (
@@ -61,15 +36,10 @@ const User = ({ person, mode }) => {
         src={buildAvatarSrc(person?.profilePicture)}
         alt={`${person?.firstname ?? ''} ${person?.lastname ?? ''}`}
         style={{ width: 50, height: 50, borderRadius: "50%", objectFit: "cover" }}
-        onError={(e) => {
-          if (e.currentTarget.src !== placeHolderProfilePic) {
-            e.currentTarget.src = placeHolderProfilePic;
-          }
-        }}
+        onError={(e) => { if (e.currentTarget.src !== placeHolderProfilePic) e.currentTarget.src = placeHolderProfilePic; }}
       />
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 700 }}>{person?.firstname} {person?.lastname}</div>
-        {/* <div style={{ fontSize: 12, color: "var(--gray)" }}>{person?.worksAt || "Write about yourself"}</div> */}
       </div>
 
       <button
